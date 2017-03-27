@@ -1,5 +1,5 @@
 package battleship;
 
-public class cell {
-
+public class Cell {
+	//Hello World!Hi
 }
