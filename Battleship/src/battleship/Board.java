@@ -60,7 +60,7 @@ public class Board {
 	
 	public void hitCell(String coord) {
 		Cell cell = getCellByCoord(coord);
-		
+		int i = cell.beHit();
 	}
 	
 	private boolean isValidCoord(String coord) {
