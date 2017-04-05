@@ -115,15 +115,9 @@ public class Board {
 	}
 	
 	
-	public boolean checkShip(ShipState type, String orientation, String coord) {
+	public boolean checkShip(int ship, String orientation, String coord) {
 		Cell cell = getCellByCoord(coord);
 		orientation = orientation.toLowerCase();
-		int ship = shipStateToInt(type);
-		
-		if (!isValidOrientation(orientation)) { //SHOULD THIS BE DONE HERE???
-			System.out.println("Invalid orientation");
-			return false;
-		}
 		
 		switch(orientation) {
 		case "up": 
@@ -155,10 +149,10 @@ public class Board {
 	}
 	
 	
-	public void placeShip(ShipState type, String orientation, String coord) {
-		if (checkShip(type, orientation, coord)) {
+	public void placeShip(int ship, String orientation, String coord) {
+		if (checkShip(ship, orientation, coord)) {
 			 Cell cell = getCellByCoord(coord);
-			 int ship = shipStateToInt(type);
+			 ShipState type = intToShipState(ship);
 			
 			switch(orientation) {
 			case "up": 
@@ -195,6 +189,17 @@ public class Board {
 		case FOUR: return 4;
 		case FIVE: return 5;
 		default: return 0; //possible logic error?
+		}
+	}
+	
+	private ShipState intToShipState(int i) {
+		switch(i) {
+		case 1: return ShipState.ONE;
+		case 2: return ShipState.TWO;
+		case 3: return ShipState.THREE;
+		case 4: return ShipState.FOUR;
+		case 5: return ShipState.FIVE;
+		default: return ShipState.ZERO; //possible logic error?
 		}
 	}
 
