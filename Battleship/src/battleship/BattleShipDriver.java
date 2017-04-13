@@ -1,7 +1,8 @@
 package battleship;
 import java.util.*;
 public class BattleShipDriver {
-	public static void main(String args[]){
+	
+	public static void main(String args[]) {
 		String a;
 		String b;
 		Player player1=new Player();
@@ -15,10 +16,10 @@ public class BattleShipDriver {
 			a=input.nextLine();
 			System.out.println("Enter the coordinate in the from of x-axis first then y. For example A3 or D8");
 			b=input.nextLine();
-			player1.getboard.placeShip(i,a,b){
+			player1.getBoard().placeShip(i,a,b){
 				
 			}
-			player1.getboard.checkship(i,a,b){
+			player1.getBoard().checkship(i,a,b){
 				
 			}
 			System.out.println(player1.getboard());
