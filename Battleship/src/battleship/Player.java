@@ -3,7 +3,6 @@ package battleship;
 public class Player {
 	private int playerNum;
 	private Board board;
-	
 	public Player(){
 		playerNum=0;
 		board=new Board();
@@ -14,5 +13,8 @@ public class Player {
 	}
 	public int getplayerNum(){
 		return playerNum;
+	}
+	public Board getBoard(){
+		return board;
 	}
 }
