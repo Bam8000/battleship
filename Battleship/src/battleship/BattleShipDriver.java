@@ -1,84 +1,78 @@
 package battleship;
 import java.util.*;
 public class BattleShipDriver {
+	
 	public static void main(String args[]){
-		String a;
-		String b;
 		Player player1=new Player();
 		Player player2=new Player();
 		Scanner input=new Scanner(System.in);
-		System.out.println("Player 1 board setup");
-		System.out.println("Player 2 look away");
-		for (int i=1;i<6;i++){
-			System.out.println("Where would u like to place ship "+i);
-			System.out.println("Enter an orientation:up,down,left or right");
-			a=input.nextLine();
-			System.out.println("Enter the coordinate in the from of x-axis first then y. For example A3 or D8");
-			b=input.nextLine();
-			player1.getBoard().placeShip(i,a,b);
-				
+		boolean play = true;
+		int winnerNum = 0;
+		
+		player1.setPlayerNum(1);
+		player2.setPlayerNum(2);
+		
+		boardSetup(player1, player2, input);
+		boardSetup(player1, player2, input);
+		
+		while (play){
 			
-			player1.getBoard().checkShip(i,a,b);
+			gamePlay(player1, input);
+			if (player1.getBoard().hasLost()) {
+				play = false;
+				winnerNum = 1;
+				break;
+			}
 			
-			
-			System.out.println(player1.getBoard());
-
+			gamePlay(player2, input);
+			if (player2.getBoard().hasLost()) {
+				play = false;
+				winnerNum = 2;
+				break;
+			}
+		}
+		
+		System.out.println("Player %d wins the game!");
+		
 	}
+	
+	
+	private boolean isValidOrientation(String orientation) {
+		return orientation.equals("up") || orientation.equals("down") || 
+				orientation.equals("right") || orientation.equals("left");
+	}
+	
+	private static void boardSetup(Player setter, Player waiter, Scanner input) {
+		String orientation;
+		String coordinate;
+		
+		System.out.printf("\nPlayer %d: Board Setup", setter.getPlayerNum());
+		System.out.printf("\nPlayer %d: Look away", waiter.getPlayerNum());
+
+		for (int i=1;i<6;i++){
+			System.out.println("Where would you like to place a ship "+i);
+			System.out.println("Enter an orientation: up, down, left, right"); //NOTE: MAKE ROBUST
+			orientation=input.nextLine();
+			System.out.println("Enter the coordinate in the form of x-axis first then y. For example A3 or D8");
+			coordinate=input.nextLine();
+			setter.getBoard().placeShip(i,orientation,coordinate);
+			
+			System.out.println(setter.getBoard());
+		}
+		
 		for(int c=0;c<20;c++){
 			System.out.println("-----------------------------------------------------------------------------");
 			System.out.println("Do not scroll up unless you are a big fat cheater");
 		}
-		
-		System.out.println("Player 2 board setup");
-		System.out.println("Player 1 look away");
-		for (int i=1;i<6;i++){
-			System.out.println("Where would u like to place ship "+i);
-			System.out.println("Enter an orientation:up,down,left or right");
-			a=input.nextLine();
-			System.out.println("Enter the coordinate in the from of x-axis first then y. For example A3 or D8");
-			b=input.nextLine();
-			player2.getBoard().placeShip(i,a,b);
-				
-			
-			player2.getBoard().checkShip(i,a,b);
-				
-			
-			System.out.println(player2.getBoard());
 	}
-		for(int c=0;c<20;c++){
-			System.out.println("-----------------------------------------------------------------------------");
-		}
+	
+	private static void gamePlay(Player player, Scanner input) {
+		String missile;
 		
-		
-		int e=1;
-		int f=1;
-		while (e>0|| f>0){
-			for(int g=1;g<3;g++){
-				if (g==1){
-					System.out.println("Player 1 please select a coordinate to fire");
-					System.out.println("Enter the coordinate in the from of x-axis first then y. For example A3 or D8");
-					String missile=input.nextLine();
-					player2.getBoard().hitCell(missile);
-				}
-				else{
-					System.out.println("Player 2 please select a coordinate to fire");
-					System.out.println("Enter the coordinate in the from of x-axis first then y. For example A3 or D8");
-					String missile=input.nextLine();
-					player1.getBoard().hitCell(missile);
-				}
-				e=0;
-				f=0;
-				for (int d=1;d<6;d++){
-					e=e+player1.getBoard().shipCount[d];
-					f=f+player2.getBoard().shipCount[d];
-			}
-			}
-		}
-		
-}
-	private boolean isValidOrientation(String orientation) {
-		return orientation.equals("up") || orientation.equals("down") || 
-				orientation.equals("right") || orientation.equals("left");
+		System.out.printf("\nPlayer %d please select a coordinate to fire at", player.getPlayerNum());
+		System.out.println("Enter the coordinate in the form of x-axis first then y. For example A3 or D8"); //MAKE ROBUST!!
+		missile = input.nextLine();
+		player.getBoard().hitCell(missile);
 	}
 	
 }

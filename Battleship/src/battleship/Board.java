@@ -115,6 +115,15 @@ public class Board {
 	}
 	
 	
+	public boolean hasLost() {
+		int count = 0;
+		for (int i=1; i<6; i++) {
+			count += shipCount[i];
+		}
+		return count == 0;
+	}
+	
+	
 	public boolean checkShip(int ship, String orientation, String coord) {
 		Cell cell = getCellByCoord(coord);
 		orientation = orientation.toLowerCase();
