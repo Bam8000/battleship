@@ -32,10 +32,9 @@ public class BattleShipDriver {
 			}
 		}
 		
-		System.out.println("Player %d wins the game!");
+		System.out.printf("\nPlayer %d wins the game!", winnerNum);
 		
 	}
-	
 	
 	private boolean isValidOrientation(String orientation) {
 		return orientation.equals("up") || orientation.equals("down") || 
