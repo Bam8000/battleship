@@ -1,5 +1,7 @@
 package battleship;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 public class BattleShipDriver {
 	
 	public static void main(String args[]){
@@ -13,19 +15,22 @@ public class BattleShipDriver {
 		player2.setPlayerNum(2);
 		
 		boardSetup(player1, player2, input);
-		boardSetup(player1, player2, input);
+		boardSetup(player2, player1, input);
+		
+		player1.getBoard().setType(BoardType.HIDDEN);
+		player2.getBoard().setType(BoardType.HIDDEN);
 		
 		while (play){
 			
-			gamePlay(player1, input);
-			if (player1.getBoard().hasLost()) {
+			gamePlay(player1, player2, input);
+			if (player2.getBoard().hasLost()) {
 				play = false;
 				winnerNum = 1;
 				break;
 			}
 			
-			gamePlay(player2, input);
-			if (player2.getBoard().hasLost()) {
+			gamePlay(player2, player1, input);
+			if (player1.getBoard().hasLost()) {
 				play = false;
 				winnerNum = 2;
 				break;
@@ -36,25 +41,24 @@ public class BattleShipDriver {
 		
 	}
 	
-	private boolean isValidOrientation(String orientation) {
-		return orientation.equals("up") || orientation.equals("down") || 
-				orientation.equals("right") || orientation.equals("left");
-	}
-	
 	private static void boardSetup(Player setter, Player waiter, Scanner input) {
 		String orientation;
 		String coordinate;
+		int i = 1;
 		
 		System.out.printf("\nPlayer %d: Board Setup", setter.getPlayerNum());
 		System.out.printf("\nPlayer %d: Look away", waiter.getPlayerNum());
 
-		for (int i=1;i<6;i++){
-			System.out.println("Where would you like to place a ship "+i);
-			System.out.println("Enter an orientation: up, down, left, right"); //NOTE: MAKE ROBUST
-			orientation=input.nextLine();
-			System.out.println("Enter the coordinate in the form of x-axis first then y. For example A3 or D8");
-			coordinate=input.nextLine();
-			setter.getBoard().placeShip(i,orientation,coordinate);
+		while (i<6) {
+			System.out.println("\nWhere would you like to place ship number "+i+":");
+			orientation = getOrientation(input);
+			coordinate = getCoord(input);
+			if (setter.getBoard().checkShip(i,orientation,coordinate)) {
+				setter.getBoard().placeShip(i,orientation,coordinate);
+				i++;
+			} else {
+				System.out.println("You can't place a ship there!");
+			}
 			
 			System.out.println(setter.getBoard());
 		}
@@ -65,13 +69,62 @@ public class BattleShipDriver {
 		}
 	}
 	
-	private static void gamePlay(Player player, Scanner input) {
+	
+	private static void gamePlay(Player player1, Player player2, Scanner input) {
 		String missile;
 		
-		System.out.printf("\nPlayer %d please select a coordinate to fire at", player.getPlayerNum());
-		System.out.println("Enter the coordinate in the form of x-axis first then y. For example A3 or D8"); //MAKE ROBUST!!
-		missile = input.nextLine();
-		player.getBoard().hitCell(missile);
+		System.out.println(player2.getBoard());
+		System.out.printf("\nPlayer %d please select a coordinate to fire at", player1.getPlayerNum());
+		missile = getCoord(input);
+		player2.getBoard().hitCell(missile);
+		System.out.println(player2.getBoard());
+	}
+	
+	
+	private static String getOrientation(Scanner input) {
+		boolean validOrientation = false;
+		String orientation = "up";
+		
+		while (!validOrientation) {
+			System.out.println("Enter an orientation: up, down, left, right");
+			orientation=input.nextLine();
+			if (isValidOrientation(orientation)) validOrientation = true;
+			else System.out.println("Please give a valid orientation!");
+		}
+		
+		return orientation.toLowerCase();
+	}
+	
+	
+	private static String getCoord(Scanner input) {
+		boolean validCoord = false;
+		String coord = "";
+		
+		while (!validCoord) {
+			System.out.println("\nEnter the coordinate in the form of x-axis first then y. For example A3 or D8");
+			coord=input.nextLine();
+			if (isValidCoord(coord)) {
+				validCoord = true;
+				System.out.println("run");
+			}
+			else System.out.println("Please give a valid coordinate!");
+		}
+		
+		return coord;
+	}
+	
+	
+	private static boolean isValidOrientation(String orientation) {
+		orientation = orientation.toLowerCase();
+		return orientation.equals("up") || orientation.equals("down") || 
+				orientation.equals("right") || orientation.equals("left");
+	}
+	
+	
+	private static boolean isValidCoord(String coord) {
+		Pattern p = Pattern.compile("[A-Ja-j][1-9]");
+		Matcher m = p.matcher(coord);
+		return m.matches();
 	}
 	
 }

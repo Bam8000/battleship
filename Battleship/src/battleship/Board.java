@@ -1,7 +1,5 @@
 package battleship;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Board {
 	private BoardType type;
@@ -21,6 +19,7 @@ public class Board {
 		
 		for (int r=0; r<10; r++) {
 			for (int c=0; c<10; c++) {
+				board[r][c] = new Cell();
 				board[r][c].setX(r);
 				board[r][c].setY(c);
 			}
@@ -63,42 +62,6 @@ public class Board {
 	}
 	
 	
-	//May not need to be public!!
-	public Cell getCellByCoord(String coord) {
-		return board[getXOfCoord(coord)][getYOfCoord(coord)];
-	}
-	
-	
-	//may not need to be public
-	public int getXOfCoord(String coord) {
-		String letter = coord.substring(0, 1).toUpperCase();
-		int x;
-		
-		switch(letter) {
-		case "A": x = 0;
-		case "B": x = 1;
-		case "C": x = 2;
-		case "D": x = 3;
-		case "E": x = 4;
-		case "F": x = 5;
-		case "G": x = 6;
-		case "H": x = 7;
-		case "I": x = 8;
-		case "J": x = 9;
-		default: x = 0;
-		}
-		
-		return x;
-	}
-	
-	
-	//may not need to be public
-	public int getYOfCoord(String coord) {
-		int number = Integer.parseInt(coord.substring(1)); //will it give a logic error?
-		return number;
-	}
-	
-	
 	public void hitCell(String coord) {
 		Cell cell = getCellByCoord(coord);
 		
@@ -129,27 +92,27 @@ public class Board {
 		orientation = orientation.toLowerCase();
 		
 		switch(orientation) {
-		case "up": 
-			for (int c=cell.getY(); c>(cell.getY()-ship); c--) {
-				if (c < 0 || board[cell.getX()][c].getShip() != ShipState.ZERO) {
+		case "up":
+			for (int r=cell.getX(); r>(cell.getX()-ship); r--) {
+				if (r < 0 || board[r][cell.getY()].getShip() != ShipState.ZERO) {
 					return false;
 				}
 			} return true;
 		case "down":
-			for (int c=cell.getY(); c<(ship+cell.getY()); c++) {
-				if (c > 9 || board[cell.getX()][c].getShip() != ShipState.ZERO) {
-					return false;
-				}
-			} return true;
-		case "right":
 			for (int r=cell.getX(); r<(ship+cell.getX()); r++) {
 				if (r > 9 || board[r][cell.getY()].getShip() != ShipState.ZERO) {
 					return false;
 				}
 			} return true;
+		case "right":
+			for (int c=cell.getY(); c<(ship+cell.getY()); c++) {
+				if (c > 9 || board[cell.getX()][c].getShip() != ShipState.ZERO) {
+					return false;
+				}
+			} return true;
 		case "left":
-			for (int r=cell.getX(); r>(cell.getX()-ship); r--) {
-				if (r < 0 || board[r][cell.getY()].getShip() != ShipState.ZERO) {
+			for (int c=cell.getY(); c>(cell.getY()-ship); c--) {
+				if (c < 0 || board[cell.getX()][c].getShip() != ShipState.ZERO) {
 					return false;
 				}
 			} return true;
@@ -159,34 +122,23 @@ public class Board {
 	
 	
 	public void placeShip(int ship, String orientation, String coord) {
-		if (checkShip(ship, orientation, coord)) {
-			 Cell cell = getCellByCoord(coord);
-			 ShipState type = intToShipState(ship);
+		Cell cell = getCellByCoord(coord);
+		ShipState type = intToShipState(ship);
 			
-			switch(orientation) {
-			case "up": 
-				for (int c=cell.getY(); c>(cell.getY()-ship); c--) board[cell.getX()][c].setShip(type);
-			case "down":
-				for (int c=cell.getY(); c<(ship+cell.getY()); c++) board[cell.getX()][c].setShip(type);
-			case "right":
-				for (int r=cell.getX(); r<(ship+cell.getX()); r++) board[r][cell.getY()].setShip(type);
-			case "left":
-				for (int r=cell.getX(); r>(cell.getX()-ship); r--) board[r][cell.getY()].setShip(type);
-			}	
+		switch(orientation) {
+		case "up":
+			for (int r=cell.getX(); r>(cell.getX()-ship); r--) board[r][cell.getY()].setShip(type);
+			break;
+		case "down":
+			for (int r=cell.getX(); r<(ship+cell.getX()); r++) board[r][cell.getY()].setShip(type);
+			break;
+		case "right":
+			for (int c=cell.getY(); c<(ship+cell.getY()); c++) board[cell.getX()][c].setShip(type);
+			break;
+		case "left":
+			for (int c=cell.getY(); c>(cell.getY()-ship); c--) board[cell.getX()][c].setShip(type);
+			break;
 		}
-	}
-	
-	
-	private boolean isValidCoord(String coord) {
-		Pattern p = Pattern.compile("[a-jA-J][1-10]");
-		Matcher m = p.matcher(coord);
-		return m.find();
-	}
-	
-	
-	private boolean isValidOrientation(String orientation) {
-		return orientation.equals("up") || orientation.equals("down") || 
-				orientation.equals("right") || orientation.equals("left");
 	}
 	
 	
@@ -197,9 +149,10 @@ public class Board {
 		case THREE: return 3;
 		case FOUR: return 4;
 		case FIVE: return 5;
-		default: return 0; //possible logic error?
+		default: return 0;
 		}
 	}
+	
 	
 	private ShipState intToShipState(int i) {
 		switch(i) {
@@ -208,8 +161,38 @@ public class Board {
 		case 3: return ShipState.THREE;
 		case 4: return ShipState.FOUR;
 		case 5: return ShipState.FIVE;
-		default: return ShipState.ZERO; //possible logic error?
+		default: return ShipState.ZERO;
 		}
+	}
+	
+	
+	private Cell getCellByCoord(String coord) {
+		return board[getYOfCoord(coord)][getXOfCoord(coord)];
+	}
+	
+	
+	private int getXOfCoord(String coord) {
+		String letter = coord.substring(0, 1).toUpperCase();
+		
+		switch(letter) {
+		case "A": return 0;
+		case "B": return 1;
+		case "C": return 2;
+		case "D": return 3;
+		case "E": return 4;
+		case "F": return 5;
+		case "G": return 6;
+		case "H": return 7;
+		case "I": return 8;
+		case "J": return 9;
+		default: return 0;
+		}
+	}
+	
+	
+	private int getYOfCoord(String coord) {
+		int number = Integer.parseInt(coord.substring(1)); //will it give a logic error?
+		return number - 1;
 	}
 
 }
